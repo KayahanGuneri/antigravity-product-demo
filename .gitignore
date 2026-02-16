@@ -1,0 +1,5 @@
+.env
+backend/build/
+backend/.gradle/
+backend/.idea/
+backend/out/
