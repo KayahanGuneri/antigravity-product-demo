@@ -3,3 +3,5 @@ backend/build/
 backend/.gradle/
 backend/.idea/
 backend/out/
+backend/*.log
+*.log
