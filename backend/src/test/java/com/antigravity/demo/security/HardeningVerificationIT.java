@@ -77,7 +77,7 @@ public class HardeningVerificationIT extends PostgresTestContainerConfig {
 
     @Test
     void shouldReturnStandardizedJsonFor403() throws Exception {
-        String userToken = JwtTestTokens.createToken("user@example.com", "ROLE_USER");
+        String userToken = JwtTestTokens.createToken("user@example.com", "USER");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", "Bearer " + userToken)
@@ -91,7 +91,7 @@ public class HardeningVerificationIT extends PostgresTestContainerConfig {
 
     @Test
     void shouldRejectMaliciousInputWith400() throws Exception {
-        String adminToken = JwtTestTokens.createToken("admin@example.com", "ROLE_ADMIN");
+        String adminToken = JwtTestTokens.createToken("admin@example.com", "ADMIN");
 
         mockMvc.perform(post("/api/products")
                 .header("Authorization", "Bearer " + adminToken)
