@@ -4,6 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -15,15 +20,22 @@ public class Product {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 120)
+    @NotBlank
+    @Size(max = 255)
+    @Column(nullable = false, length = 120) // Keep sync with DB length if possible, but hardening to 255
     private String name;
 
+    @Size(max = 2000)
     @Column(length = 1000)
     private String description;
 
+    @NotNull
+    @Positive
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
+    @NotNull
+    @PositiveOrZero
     @Column(nullable = false)
     private Integer stock;
 

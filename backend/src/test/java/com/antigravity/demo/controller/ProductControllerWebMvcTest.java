@@ -122,6 +122,38 @@ class ProductControllerWebMvcTest {
         }
 
         @Test
+        void createProduct_shouldReturn400_WhenInvalidPayload() throws Exception {
+                ProductCreateRequest invalidRequest = new ProductCreateRequest("", "Desc", null, -1);
+
+                mockMvc.perform(post("/api/products")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.message").value("Validation failed"))
+                                .andExpect(jsonPath("$.fieldErrors").isArray())
+                                .andExpect(jsonPath("$.fieldErrors.length()").value(3));
+
+                verify(productService, never()).createProduct(any());
+        }
+
+        @Test
+        void updateProduct_shouldReturn400_WhenInvalidPayload() throws Exception {
+                UUID id = UUID.randomUUID();
+                ProductUpdateRequest invalidRequest = new ProductUpdateRequest(" ", "Desc", null, -5);
+
+                mockMvc.perform(put("/api/products/{id}", id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(invalidRequest)))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.status").value(400))
+                                .andExpect(jsonPath("$.message").value("Validation failed"))
+                                .andExpect(jsonPath("$.fieldErrors").isArray());
+
+                verify(productService, never()).updateProduct(any(), any());
+        }
+
+        @Test
         void deleteProduct_shouldReturn204() throws Exception {
                 UUID id = UUID.randomUUID();
                 doNothing().when(productService).deleteProduct(id);
