@@ -4,6 +4,7 @@ import com.antigravity.demo.dto.ProductDTOs.*;
 import com.antigravity.demo.exception.ProductNotFoundException;
 import com.antigravity.demo.model.Product;
 import com.antigravity.demo.repository.ProductRepository;
+import com.antigravity.demo.service.InputSanitizer;
 import com.antigravity.demo.service.ProductService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse createProduct(ProductCreateRequest request) {
         Product product = new Product();
         product.setId(UUID.randomUUID());
-        product.setName(request.name());
-        product.setDescription(request.description());
+        product.setName(InputSanitizer.sanitize(request.name(), "Name", 100, true));
+        product.setDescription(InputSanitizer.sanitize(request.description(), "Description", 1000, false));
         product.setPrice(request.price());
         product.setStock(request.stock());
         product.setCreatedAt(Instant.now());
@@ -58,8 +59,8 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
 
-        product.setName(request.name());
-        product.setDescription(request.description());
+        product.setName(InputSanitizer.sanitize(request.name(), "Name", 100, true));
+        product.setDescription(InputSanitizer.sanitize(request.description(), "Description", 1000, false));
         product.setPrice(request.price());
         product.setStock(request.stock());
 
