@@ -19,13 +19,22 @@ const LoginPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await api.post<{ token: string }>("/api/auth/login", {
+            const response = await api.post<{
+                accessToken: string;
+                tokenType: string;
+                expiresInSeconds: number;
+                role: string;
+            }>("/api/auth/login", {
                 email,
                 password,
             });
 
-            const { token } = response.data;
-            auth.login(token);
+            const { accessToken } = response.data;
+            if (!accessToken) {
+                setError("Login failed: invalid token response");
+                return;
+            }
+            auth.login(accessToken);
             navigate("/");
         } catch (err: unknown) {
             if (
