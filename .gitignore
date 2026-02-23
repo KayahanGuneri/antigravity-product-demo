@@ -12,3 +12,7 @@ frontend/dist/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+
+# Backend Build
+backend/bin/
+**/*.class
