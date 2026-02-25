@@ -214,7 +214,7 @@ const ProductsPage: React.FC = () => {
             {error && <div className="error-message">{error}</div>}
 
             {loading ? (
-                <p>Loading products...</p>
+                <div className="loading-text">Loading products...</div>
             ) : (
                 <table className="products-table">
                     <thead>
@@ -234,6 +234,7 @@ const ProductsPage: React.FC = () => {
                                         <td>
                                             <input
                                                 type="text"
+                                                className="form-input"
                                                 value={editDraft.name}
                                                 onChange={(e) => setEditDraft({ ...editDraft, name: e.target.value })}
                                             />
@@ -241,6 +242,7 @@ const ProductsPage: React.FC = () => {
                                         <td>
                                             <input
                                                 type="text"
+                                                className="form-input"
                                                 value={editDraft.description}
                                                 onChange={(e) => setEditDraft({ ...editDraft, description: e.target.value })}
                                             />
@@ -248,6 +250,7 @@ const ProductsPage: React.FC = () => {
                                         <td>
                                             <input
                                                 type="number"
+                                                className="form-input"
                                                 step="0.01"
                                                 value={editDraft.price}
                                                 onChange={(e) => setEditDraft({ ...editDraft, price: Number(e.target.value) })}
@@ -256,13 +259,16 @@ const ProductsPage: React.FC = () => {
                                         <td>
                                             <input
                                                 type="number"
+                                                className="form-input"
                                                 value={editDraft.stock}
                                                 onChange={(e) => setEditDraft({ ...editDraft, stock: parseInt(e.target.value, 10) || 0 })}
                                             />
                                         </td>
                                         <td>
-                                            <button onClick={() => handleUpdate(p.id)} disabled={inFlight}>Save</button>
-                                            <button onClick={() => setEditingId(null)} disabled={inFlight}>Cancel</button>
+                                            <div className="product-actions">
+                                                <button className="product-btn-sm" onClick={() => handleUpdate(p.id)} disabled={inFlight}>Save</button>
+                                                <button className="product-btn-sm" onClick={() => setEditingId(null)} disabled={inFlight}>Cancel</button>
+                                            </div>
                                         </td>
                                     </>
                                 ) : (
@@ -273,8 +279,10 @@ const ProductsPage: React.FC = () => {
                                         <td>{p.stock}</td>
                                         {isAdmin && (
                                             <td>
-                                                <button onClick={() => handleEditInit(p)} disabled={inFlight}>Edit</button>
-                                                <button onClick={() => handleDelete(p.id)} disabled={inFlight}>Delete</button>
+                                                <div className="product-actions">
+                                                    <button className="product-btn-sm" onClick={() => handleEditInit(p)} disabled={inFlight}>Edit</button>
+                                                    <button className="product-btn-sm product-btn-delete" onClick={() => handleDelete(p.id)} disabled={inFlight}>Delete</button>
+                                                </div>
                                             </td>
                                         )}
                                     </>
@@ -284,6 +292,7 @@ const ProductsPage: React.FC = () => {
                     </tbody>
                 </table>
             )}
+
         </div>
     );
 };

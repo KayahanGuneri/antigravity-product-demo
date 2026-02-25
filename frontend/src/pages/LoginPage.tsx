@@ -116,12 +116,13 @@ const LoginPage: React.FC = () => {
                         {loading ? (
                             <span className="btn-loading">
                                 <span className="btn-spinner" />
-                                Signing in…
+                                Signing in...
                             </span>
                         ) : (
                             "Sign In"
                         )}
                     </button>
+
                 </form>
 
                 <p className="auth-switch">
