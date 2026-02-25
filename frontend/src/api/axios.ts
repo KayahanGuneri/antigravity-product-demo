@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getApiBaseUrl } from "../config/env";
+import { API_BASE_URL, IS_PROD } from "../config/env";
 import { getToken, clearToken } from "../auth/tokenStorage";
 
 export type NormalizedApiError = {
@@ -8,8 +8,17 @@ export type NormalizedApiError = {
   details?: unknown;
 };
 
+const normalizeBaseURL = (url: string): string => {
+  const trimmed = url.trim();
+  if (trimmed === "/") return "/";
+  if (trimmed.endsWith("/") && trimmed.length > 1) {
+    return trimmed.slice(0, -1);
+  }
+  return trimmed;
+};
+
 const api = axios.create({
-  baseURL: getApiBaseUrl(),
+  baseURL: normalizeBaseURL(API_BASE_URL),
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -22,21 +31,17 @@ let isLoggingOut = false;
 if (!interceptorsRegistered) {
   api.interceptors.request.use(
     (config) => {
-      const headers = ((config.headers ??= {}) as any);
-
-      // Respect per-request Authorization header if already set
-      const existingAuth = headers.Authorization;
-      if (typeof existingAuth === "string" && existingAuth.trim() !== "") {
-        return config;
-      }
-
       const token = getToken();
       if (token && token.trim() !== "") {
-        headers.Authorization = `Bearer ${token}`;
+        // Only add token if Authorization header is not already present
+        if (config.headers && !config.headers.Authorization) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
 
       return config;
     },
+
     (error) => Promise.reject(error)
   );
 
@@ -67,6 +72,11 @@ if (!interceptorsRegistered) {
       } else if (!error?.response || error?.message === "Network Error") {
         normalizedError.status = null;
         normalizedError.message = "Network error. Please try again.";
+      }
+
+      if (!IS_PROD) {
+        // Redacted for production safety, but kept for dev reference
+        // Do not log JWT or other sensitive data here
       }
 
       return Promise.reject(normalizedError);
