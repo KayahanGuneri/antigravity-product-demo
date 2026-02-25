@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { getToken, setToken, clearToken } from "./tokenStorage";
 
 interface AuthUser {
     email: string;
@@ -67,41 +68,41 @@ function buildUser(token: string): { user: AuthUser; role: string } | null {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setTokenState] = useState<string | null>(null);
     const [user, setUser] = useState<AuthUser | null>(null);
     const [role, setRole] = useState<string | null>(null);
 
     const navigate = useNavigate();
 
-    // On mount: restore from localStorage
+    // On mount: restore from tokenStorage
     useEffect(() => {
-        const stored = localStorage.getItem("auth_token");
+        const stored = getToken();
         if (stored) {
             const result = buildUser(stored);
             if (result) {
-                setToken(stored);
+                setTokenState(stored);
                 setUser(result.user);
                 setRole(result.role);
             } else {
                 // Token is invalid/malformed — clear it
-                localStorage.removeItem("auth_token");
+                clearToken();
             }
         }
     }, []);
 
     const login = useCallback((newToken: string) => {
-        localStorage.setItem("auth_token", newToken);
+        setToken(newToken);
         const result = buildUser(newToken);
         if (result) {
-            setToken(newToken);
+            setTokenState(newToken);
             setUser(result.user);
             setRole(result.role);
         }
     }, []);
 
     const logout = useCallback(() => {
-        localStorage.removeItem("auth_token");
-        setToken(null);
+        clearToken();
+        setTokenState(null);
         setUser(null);
         setRole(null);
         navigate("/login");
